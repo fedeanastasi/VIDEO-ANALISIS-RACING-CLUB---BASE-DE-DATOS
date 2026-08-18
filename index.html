@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VIDEOANALISIS RACING CLUB</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --celeste: #6FB8E6;
+    --celeste-deep: #2F6FA3;
+    --navy: #0D1B2E;
+    --navy-2: #142743;
+    --paper: #F5F3ED;
+    --gold: #C7A248;
+    --ink: #101820;
+    --line: rgba(255,255,255,0.14);
+    --radius: 10px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background: var(--navy);
+    color: #EDF1F5;
+    font-family: 'Inter', sans-serif;
+    min-height:100vh;
+  }
+  h1,h2,h3,.headline{
+    font-family:'Oswald', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: .03em;
+    margin:0;
+  }
+  .mono{font-family:'IBM Plex Mono', monospace;}
+
+  /* ---------- stripes header ---------- */
+  .stripes{
+    height:6px;
+    width:100%;
+    background: repeating-linear-gradient(
+      90deg,
+      var(--celeste) 0px, var(--celeste) 26px,
+      #ffffff 26px, #ffffff 52px
+    );
+  }
+  header{
+    display:flex; align-items:center; justify-content:space-between;
+    padding: 18px 28px;
+    background: var(--navy-2);
+    border-bottom: 1px solid var(--line);
+  }
+  .brand{display:flex; align-items:center; gap:12px;}
+  .crest{
+    width:38px; height:38px; border-radius:50%;
+    background: conic-gradient(var(--celeste) 0 25%, #fff 0 50%, var(--celeste) 0 75%, #fff 0 100%);
+    border: 2px solid var(--gold);
+    flex-shrink:0;
+  }
+  .brand-text .headline{font-size:1.05rem; color:#fff;}
+  .brand-text small{color: var(--celeste); letter-spacing:.08em; font-size:.7rem;}
+  .profile-pill{
+    font-family:'IBM Plex Mono', monospace; font-size:.8rem;
+    color: var(--navy); background: var(--celeste);
+    padding: 6px 12px; border-radius: 20px;
+  }
+
+  /* ---------- login ---------- */
+  #login-view{
+    min-height: calc(100vh - 62px);
+    display:flex; align-items:center; justify-content:center;
+    padding: 24px;
+  }
+  .login-card{
+    background: var(--navy-2);
+    border:1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 40px 36px;
+    width: 100%; max-width: 380px;
+    text-align:center;
+  }
+  .login-card .headline{font-size:1.4rem; color:#fff; margin-bottom:6px;}
+  .login-card p{color:#9FB0C2; font-size:.9rem; margin: 0 0 26px;}
+  #pin-input{
+    width:100%; padding: 14px; font-size:1.4rem; letter-spacing:.4em;
+    text-align:center; font-family:'IBM Plex Mono', monospace;
+    background: var(--navy); border:1px solid var(--line); border-radius: 8px;
+    color:#fff; margin-bottom:16px;
+  }
+  #pin-input:focus{outline:2px solid var(--celeste);}
+  .btn{
+    display:inline-block; border:none; cursor:pointer;
+    font-family:'Oswald', sans-serif; text-transform:uppercase; letter-spacing:.05em;
+    font-weight:600; font-size:.9rem;
+    padding: 13px 22px; border-radius: 8px;
+    background: var(--celeste); color: var(--navy);
+    transition: transform .15s ease, background .15s ease;
+    width:100%;
+  }
+  .btn:hover{background:#8CC6EE;}
+  .btn:focus-visible{outline:3px solid var(--gold); outline-offset:2px;}
+  #login-error{color:#F0A0A0; font-size:.85rem; margin-top:12px; min-height:1.2em;}
+
+  /* ---------- main app ---------- */
+  main{padding: 24px 28px 60px; max-width: 1180px; margin: 0 auto;}
+  .hidden{display:none !important;}
+
+  .toolbar{
+    display:flex; flex-wrap:wrap; gap:12px; align-items:center;
+    margin-bottom: 22px;
+  }
+  select, input[type="search"]{
+    background: var(--navy-2); border:1px solid var(--line); color:#fff;
+    padding: 10px 14px; border-radius: 8px; font-family:'Inter'; font-size:.9rem;
+  }
+  select:focus, input[type="search"]:focus{outline:2px solid var(--celeste);}
+  input[type="search"]{flex:1; min-width:200px;}
+  .toolbar label{font-size:.75rem; color:#9FB0C2; text-transform:uppercase; letter-spacing:.06em; display:block; margin-bottom:4px;}
+  .field{display:flex; flex-direction:column;}
+
+  .back-link{
+    background:none; border:none; color: var(--celeste); cursor:pointer;
+    font-family:'Oswald'; text-transform:uppercase; font-size:.85rem;
+    letter-spacing:.05em; padding: 0 0 18px; display:flex; align-items:center; gap:6px;
+  }
+
+  #matches-grid{
+    display:grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 16px;
+  }
+  .match-card{
+    background: var(--navy-2); border:1px solid var(--line); border-radius: var(--radius);
+    padding: 18px; cursor:pointer; text-align:left;
+    transition: border-color .15s ease, transform .15s ease;
+  }
+  .match-card:hover{border-color: var(--celeste); transform: translateY(-2px);}
+  .match-card:focus-visible{outline:2px solid var(--gold);}
+  .match-card .fecha-tag{
+    font-family:'IBM Plex Mono'; font-size:.7rem; color: var(--gold);
+    text-transform:uppercase; letter-spacing:.08em; margin-bottom:8px; display:block;
+  }
+  .match-card .rival{font-size:1.05rem; font-weight:600; color:#fff; margin-bottom:6px;}
+  .match-card .score{
+    font-family:'IBM Plex Mono'; font-size:1.6rem; color: var(--celeste);
+  }
+  .empty-state{
+    color:#9FB0C2; text-align:center; padding: 60px 20px; font-size:.95rem;
+  }
+
+  /* ---------- match detail ---------- */
+  .match-detail-header{margin-bottom: 20px;}
+  .match-detail-header h2{font-size:1.5rem; color:#fff;}
+  video, iframe{
+    width:100%; border-radius: var(--radius); border:1px solid var(--line);
+    background:#000;
+  }
+  video{aspect-ratio:16/9; margin-bottom:14px;}
+  .ficha-frame{aspect-ratio: 3/4; min-height:480px;}
+  .detail-columns{
+    display:grid; grid-template-columns: 1.4fr 1fr; gap: 24px;
+  }
+  @media (max-width: 860px){ .detail-columns{grid-template-columns: 1fr;} }
+  .panel-title{
+    font-size:.95rem; color: var(--celeste); margin-bottom: 10px;
+  }
+  .share-row{
+    display:flex; gap:10px; align-items:center; margin-top: 16px; flex-wrap:wrap;
+  }
+  .share-row .btn{width:auto;}
+  #share-link-box{
+    flex:1; min-width:180px; background:var(--navy); border:1px solid var(--line);
+    border-radius:8px; padding:10px 12px; font-family:'IBM Plex Mono'; font-size:.8rem;
+    color:#9FB0C2; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+  }
+  .loader{
+    text-align:center; padding: 50px; color:#9FB0C2; font-family:'IBM Plex Mono'; font-size:.85rem;
+  }
+</style>
+</head>
+<body>
+
+<div class="stripes"></div>
+<header>
+  <div class="brand">
+    <div class="crest"></div>
+    <div class="brand-text">
+      <div class="headline">Videoanálisis Racing Club</div>
+      <small>BASE DE DATOS DE PARTIDOS</small>
+    </div>
+  </div>
+  <div id="profile-pill" class="profile-pill hidden mono"></div>
+</header>
+
+<!-- LOGIN -->
+<div id="login-view">
+  <div class="login-card">
+    <div class="headline">Ingresá tu PIN</div>
+    <p>Acceso para el cuerpo técnico</p>
+    <input id="pin-input" type="password" inputmode="numeric" maxlength="4" placeholder="••••" autocomplete="off">
+    <button class="btn" id="login-btn">Entrar</button>
+    <div id="login-error"></div>
+  </div>
+</div>
+
+<!-- APP -->
+<main id="app-view" class="hidden">
+
+  <!-- vista: torneos / partidos -->
+  <section id="library-view">
+    <div class="toolbar">
+      <div class="field">
+        <label for="tournament-select">Torneo</label>
+        <select id="tournament-select"></select>
+      </div>
+      <div class="field" style="flex:1; min-width:200px;">
+        <label for="search-input">Buscar por rival o fecha</label>
+        <input type="search" id="search-input" placeholder="Ej: Banfield, Fecha 5...">
+      </div>
+    </div>
+    <div id="matches-grid"></div>
+  </section>
+
+  <!-- vista: detalle de partido -->
+  <section id="detail-view" class="hidden">
+    <button class="back-link" id="back-btn">&larr; Volver a la biblioteca</button>
+    <div class="match-detail-header">
+      <h2 id="detail-title"></h2>
+    </div>
+    <div class="detail-columns">
+      <div>
+        <div class="panel-title">Video</div>
+        <div id="video-container"></div>
+        <div class="share-row">
+          <button class="btn" id="share-btn" style="width:auto;">Generar link para compartir este partido</button>
+          <div id="share-link-box" class="hidden"></div>
+        </div>
+      </div>
+      <div>
+        <div class="panel-title">Ficha técnica</div>
+        <div id="ficha-container"></div>
+      </div>
+    </div>
+  </section>
+
+  <div id="loader" class="loader hidden">Cargando...</div>
+</main>
+
+<script>
+/* =========================================================
+   CONFIGURACIÓN: pegá acá la URL de tu Apps Script publicado
+   ========================================================= */
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzR-iTvMr44iGub70wy2N9zAbwcQhkR0hIqC02xQT9SpOU7AFJ_4UTCcwExFd5LLR_l/exec";
+
+let currentTournamentId = null;
+let allMatches = [];
+let profileName = "";
+
+const $ = (id) => document.getElementById(id);
+
+async function api(params){
+  const url = new URL(APPS_SCRIPT_URL);
+  Object.keys(params).forEach(k => url.searchParams.set(k, params[k]));
+  const res = await fetch(url);
+  return res.json();
+}
+
+/* ---------- LOGIN ---------- */
+$('login-btn').addEventListener('click', doLogin);
+$('pin-input').addEventListener('keydown', (e) => { if (e.key === 'Enter') doLogin(); });
+
+async function doLogin(){
+  const pin = $('pin-input').value.trim();
+  $('login-error').textContent = '';
+  if (!pin){ return; }
+  try {
+    const data = await api({ action: 'login', pin });
+    if (data.ok){
+      profileName = data.nombre;
+      $('profile-pill').textContent = profileName;
+      $('profile-pill').classList.remove('hidden');
+      $('login-view').classList.add('hidden');
+      $('app-view').classList.remove('hidden');
+      loadTournaments();
+    } else {
+      $('login-error').textContent = 'PIN incorrecto. Probá de nuevo.';
+    }
+  } catch (err) {
+    $('login-error').textContent = 'No se pudo conectar. Revisá la conexión.';
+  }
+}
+
+/* ---------- TORNEOS ---------- */
+async function loadTournaments(){
+  showLoader(true);
+  const data = await api({ action: 'tournaments' });
+  showLoader(false);
+  const select = $('tournament-select');
+  select.innerHTML = '';
+  (data.torneos || []).forEach(t => {
+    const opt = document.createElement('option');
+    opt.value = t.id; opt.textContent = t.nombre;
+    select.appendChild(opt);
+  });
+  select.addEventListener('change', () => loadMatches(select.value));
+  if (data.torneos && data.torneos.length){
+    loadMatches(data.torneos[0].id);
+  }
+}
+
+/* ---------- PARTIDOS ---------- */
+async function loadMatches(folderId){
+  currentTournamentId = folderId;
+  showLoader(true);
+  const data = await api({ action: 'matches', folderId });
+  showLoader(false);
+  allMatches = data.partidos || [];
+  renderMatches(allMatches);
+}
+
+function renderMatches(list){
+  const grid = $('matches-grid');
+  grid.innerHTML = '';
+  if (!list.length){
+    grid.innerHTML = '<div class="empty-state">No hay partidos cargados todavía en este torneo.</div>';
+    return;
+  }
+  list.forEach(m => {
+    const card = document.createElement('button');
+    card.className = 'match-card';
+    card.innerHTML = `
+      <span class="fecha-tag">${m.fecha || ''}</span>
+      <div class="rival">${m.rival || m.nombre}</div>
+      <div class="score mono">${m.resultado || ''}</div>
+    `;
+    card.addEventListener('click', () => openMatch(m));
+    grid.appendChild(card);
+  });
+}
+
+$('search-input').addEventListener('input', (e) => {
+  const q = e.target.value.trim().toLowerCase();
+  if (!q){ renderMatches(allMatches); return; }
+  const filtered = allMatches.filter(m =>
+    (m.rival || '').toLowerCase().includes(q) ||
+    (m.fecha || '').toLowerCase().includes(q) ||
+    (m.nombre || '').toLowerCase().includes(q)
+  );
+  renderMatches(filtered);
+});
+
+/* ---------- DETALLE DE PARTIDO ---------- */
+async function openMatch(m){
+  $('library-view').classList.add('hidden');
+  $('detail-view').classList.remove('hidden');
+  $('detail-title').textContent = (m.rival ? 'vs ' + m.rival : m.nombre) + (m.resultado ? ' · ' + m.resultado : '');
+  $('share-link-box').classList.add('hidden');
+  showLoader(true);
+
+  const data = await api({ action: 'match', folderId: m.id });
+  showLoader(false);
+
+  const videoContainer = $('video-container');
+  videoContainer.innerHTML = '';
+  (data.videos || []).forEach(v => {
+    const iframe = document.createElement('iframe');
+    iframe.src = `https://drive.google.com/file/d/${v.id}/preview`;
+    iframe.allow = 'autoplay';
+    iframe.style.aspectRatio = '16/9';
+    iframe.style.marginBottom = '10px';
+    videoContainer.appendChild(iframe);
+  });
+  if (!data.videos || !data.videos.length){
+    videoContainer.innerHTML = '<div class="empty-state">Todavía no hay video cargado.</div>';
+  }
+
+  const fichaContainer = $('ficha-container');
+  fichaContainer.innerHTML = '';
+  if (data.fichaPdf){
+    const iframe = document.createElement('iframe');
+    iframe.className = 'ficha-frame';
+    iframe.src = `https://drive.google.com/file/d/${data.fichaPdf.id}/preview`;
+    fichaContainer.appendChild(iframe);
+  } else if (data.fichaImg){
+    const img = document.createElement('img');
+    img.src = `https://drive.google.com/thumbnail?id=${data.fichaImg.id}&sz=w1000`;
+    img.style.width = '100%';
+    img.style.borderRadius = 'var(--radius)';
+    img.style.border = '1px solid var(--line)';
+    fichaContainer.appendChild(img);
+  } else {
+    fichaContainer.innerHTML = '<div class="empty-state">Todavía no hay ficha técnica cargada.</div>';
+  }
+
+  $('share-btn').onclick = () => generateShareLink(m.id);
+}
+
+$('back-btn').addEventListener('click', () => {
+  $('detail-view').classList.add('hidden');
+  $('library-view').classList.remove('hidden');
+});
+
+/* ---------- COMPARTIR ---------- */
+async function generateShareLink(matchFolderId){
+  showLoader(true);
+  await api({ action: 'share', folderId: matchFolderId });
+  showLoader(false);
+  const link = `${location.origin}${location.pathname}?compartido=${matchFolderId}`;
+  const box = $('share-link-box');
+  box.textContent = link;
+  box.classList.remove('hidden');
+  navigator.clipboard && navigator.clipboard.writeText(link);
+}
+
+/* ---------- ACCESO DIRECTO VÍA LINK COMPARTIDO ---------- */
+async function checkSharedLink(){
+  const params = new URLSearchParams(location.search);
+  const shared = params.get('compartido');
+  if (!shared) return false;
+
+  $('login-view').classList.add('hidden');
+  $('app-view').classList.remove('hidden');
+  $('library-view').classList.add('hidden');
+  $('detail-view').classList.remove('hidden');
+  $('profile-pill').classList.add('hidden');
+
+  showLoader(true);
+  const data = await api({ action: 'match', folderId: shared });
+  showLoader(false);
+
+  $('detail-title').textContent = data.nombre || 'Partido compartido';
+  $('share-btn').classList.add('hidden');
+
+  const videoContainer = $('video-container');
+  videoContainer.innerHTML = '';
+  (data.videos || []).forEach(v => {
+    const iframe = document.createElement('iframe');
+    iframe.src = `https://drive.google.com/file/d/${v.id}/preview`;
+    iframe.style.aspectRatio = '16/9';
+    iframe.style.marginBottom = '10px';
+    videoContainer.appendChild(iframe);
+  });
+
+  const fichaContainer = $('ficha-container');
+  fichaContainer.innerHTML = '';
+  if (data.fichaPdf){
+    const iframe = document.createElement('iframe');
+    iframe.className = 'ficha-frame';
+    iframe.src = `https://drive.google.com/file/d/${data.fichaPdf.id}/preview`;
+    fichaContainer.appendChild(iframe);
+  }
+  return true;
+}
+
+function showLoader(v){
+  $('loader').classList.toggle('hidden', !v);
+}
+
+/* ---------- INICIO ---------- */
+checkSharedLink();
+</script>
+</body>
+</html>
